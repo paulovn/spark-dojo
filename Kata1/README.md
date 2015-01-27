@@ -3,7 +3,7 @@ text from Don Quijote, as downloaded from Project Gutemberg. The file
 has already been uploaded to the HDFS file system in our local
 cluster, so it can be accessed as
 
-    	     hdfs://<server>/data/training/quijote.utf8.txt
+    	     hdfs:///data/training/quijote.utf8.txt
 
 In case it gets deleted, uploading it again is easy:
 
