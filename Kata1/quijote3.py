@@ -40,5 +40,3 @@ for (word, count) in output:
     print >>dest, u"{1:15} : {0}".format(word, count)
 
 sc.stop()
-
-

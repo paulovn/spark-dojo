@@ -30,4 +30,5 @@ dest = codecs.open( 'quijote-words-1.txt', 'w', encoding='utf-8' )
 for (word, count) in output:
     print >>dest, u"[{0}] : {1}".format(word, count)
 
+# Stop the context -- this marks the app as finished and shows it in the history server
 sc.stop()

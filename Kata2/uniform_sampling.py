@@ -1,4 +1,4 @@
-# Quijote words - sampled version                                 -*-encoding: utf-8-*-       
+# Quijote words - sampled version                                 -*-encoding: utf-8-*-
 # ----------------------------------------------------------------------------------
 
 from operator import add
@@ -8,16 +8,17 @@ import random
 
 from pyspark import SparkContext, SparkConf
 
-conf = SparkConf().setAppName( "Quijote sampled words" )
+# Create a config, and a context
+conf = SparkConf().setAppName( "Quijote words - sampled" )
 sc = SparkContext(conf=conf)
 
 # Read the file from HDFS into a RDD
-lines = sc.textFile("hdfs:///user/samson/test/quijote.utf8.txt")
+lines = sc.textFile("hdfs:///data/training/quijote.utf8.txt")
 
 
 
-# ---------------------------------------------------------------------------
-# Sample our RDD. We define a function (actually a class) and pass it to a mapper
+# ----------------------------------------------------------------------------
+# Sample our RDD
 
 class Sampler( object ):
     """The object provivding the sampling function"""
@@ -33,15 +34,25 @@ class Sampler( object ):
                 yield obj
 
 
-# So we sample here:
 lines = lines.mapPartitionsWithIndex( Sampler(0.5), True )
 
+
 # ----------------------------------------------------------------------------
+
+# Same thing, but this time using the Spark builtin method
+# (which does the same, only better :-)
+
+#lines = lines.sample( False, 0.5 )
+
+
+# ----------------------------------------------------------------------------
+
+# Now we do the same word-count analysis as before, but with the sampled dataset
 
 # Create a new RDD with all the words in the file (by splitting the lines in our RDD)
 words = lines.flatMap( lambda x: x.strip().split(None) )
 
-removing = u'!"#%\'()*+,-./:;<=>?@[\]^_`{|}~¿¡'
+removing = u'!"#%\'()*+,-./:;<=>?@[\]^_`{|}~¡¿'
 translate_table = dict( (ord(char),None) for char in removing )
 
 # Turn the words RDD into a (key,value) RDD, in which the key is the word and value is 1
@@ -52,7 +63,7 @@ words_kv = words.map( lambda x: (x.translate(translate_table), 1) )
 counts = words_kv.reduceByKey( add )
 
 # And sort by frequency
-ordered_counts = counts.map( lambda (a,b) : (b,a) ).sortByKey( False )
+ordered_counts = counts.map( lambda (a,b) : (b,a) ).sortByKey( False ) 
 
 # Collect results
 output = ordered_counts.collect()
@@ -63,4 +74,5 @@ for (word, count) in output:
     print >>dest, u"{1:15} : {0}".format(word, count)
 
 sc.stop()
+
 
