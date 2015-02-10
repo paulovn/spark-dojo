@@ -12,11 +12,25 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext, Row
 
 
+# ---------------------------------------------------------------------------------
+
+def write_histogram( bins, values, name, out ):
+    """
+    Write a histogram to an output destination
+    """
+    bins2 = map( lambda x : datetime.timedelta( seconds=int(x*60) ), bins )
+    print >>out, "\n", name
+    for i in range(len(values)):
+        print >>out, "[{0!s:20}, {1!s:20}) : {2:10}".format( bins2[i], bins2[i+1], values[i] )
+
+
+# ---------------------------------------------------------------------------------
+
 # Source file
 name = 'intervals.txt'
 
 # Prepare a Spark configuration. Modify it to allow overwriting output files
-conf = SparkConf().setAppName( "Processing Movistar TV logs - {0}".format(0) )
+conf = SparkConf().setAppName( "Processing Movistar TV logs - {0}".format(sys.argv[0]) )
 conf.set( 'spark.hadoop.validateOutputSpecs', False )
 
 # Create a Spark context and set it to work
@@ -32,20 +46,14 @@ with SparkContext(conf=conf) as sc:
 
     # The histogram is a couple of regular Python lists, received by the driver. 
     # Let's write them out in a nice form
-    bins = map( lambda x :datetime.timedelta(minutes=x), bins )
     with open( 'intervals-histogram.txt', 'w' ) as out:
-        print >>out, "Histogram"
-        for i in range(len(values)):
-            print >>out, "[{0!s:20}, {1!s:20}) : {2}".format( bins[i], bins[i+1], values[i] )
-
+        write_histogram( bins, values, "uniform histogram", out )
+                                                              
 
     # Another histogram, this time we specify the bins
-    hbins = [0, 5, 10, 15, 20, 25, 30,
+    hbins = [0, 0.5, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 60, 120,
              60*24, 60*24*2, 60*24*3, 60*24*4, 60*24*5, 60*24*6, 60*24*7, 60*24*8, 60*24*9 ]
     bins2, values2 = intervals.histogram( hbins )
 
-    bins2 = map( lambda x :datetime.timedelta(minutes=x), bins2 )
     with open( 'intervals-histogram.txt', 'a' ) as out:
-        print >>out, "\nHistogram 2"
-        for i in range(len(values2)):
-            print >>out, "[{0!s:20}, {1!s:20}) : {2}".format( bins2[i], bins2[i+1], values2[i] )
+        write_histogram( bins2, values2, "non-uniform histogram", out )

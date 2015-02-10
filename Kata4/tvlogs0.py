@@ -62,4 +62,4 @@ with SparkContext(conf=conf) as sc:
     csv_logs.saveAsTextFile( "hdfs:///user/{0}/data/tvlogs/fields.csv".format(sc.sparkUser()) )
 
     # We could also save them serialized, as Python pickle
-    logs.saveAsPickleFile( "hdfs:///user/{0}//data/tvlogs/fields.pkl".format(sc.sparkUser()) )
+    logs.saveAsPickleFile( "hdfs:///user/{0}/data/tvlogs/fields.pkl".format(sc.sparkUser()) )

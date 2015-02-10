@@ -23,7 +23,7 @@ def time_intervals( datapoints ):
     Compute the time differences between log entries by the same user
     """
     # Get the timestamps from the stream, and sort by them
-    datapoints = sorted( [t[2] for t in datapoints] )
+    datapoints = sorted( [t[1] for t in datapoints] )
     first = datapoints[0]
     # Iterate over the rest, computing the difference between consecutive timestamps
     d = list()
@@ -35,7 +35,7 @@ def time_intervals( datapoints ):
 
 
 # Prepare a Spark configuration. Modify it to allow overwriting output files
-conf = SparkConf().setAppName( "Processing Movistar TV logs - {0}".format(0) )
+conf = SparkConf().setAppName( "Processing Movistar TV logs - {0}".format(sys.argv[0]) )
 conf.set( 'spark.hadoop.validateOutputSpecs', False )
 
 
