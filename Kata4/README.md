@@ -1,5 +1,5 @@
 
-This Kata changes dataset: we are now processing a batch of [Movistar TV logs] [1]
+This Kata changes dataset: we are now processing a batch of [Movistar TV logs][1]
 
 There are different versions of these logs. We will work with the version with this structure:
 
@@ -17,4 +17,4 @@ There are different versions of these logs. We will work with the version with t
 The first thing we'll do is create a tiny sample, so that the exercises run fast.
 
 
-[1] : http://wikis.hi.inet/kg/index.php/ML:TVLogAnalysis
+[1]: http://wikis.hi.inet/kg/index.php/ML:TVLogAnalysis
